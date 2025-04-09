@@ -1,7 +1,7 @@
 import { Outlet, Navigate } from "react-router"
 
 const QuizLayout = () => {
-  if (!localStorage.getItem("user")) {
+  if (!localStorage.getItem("username")) {
     return <Navigate to="/login" />
   }
 
