@@ -6,6 +6,7 @@ import WaitingRoomPage from "./pages/WaitingRoomPage";
 import RoomCreate from "./pages/RoomCreate";
 import LeaderboardPage from "./pages/LeaderBoard";
 import { LeaderboardProvider } from "./contexts/LeaderboardContext";
+import GamePage from "./pages/GamePage";
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
             <Route path="/" element={<RoomBrowserPage />} />
             <Route path="/room/create" element={<RoomCreate />} />
             <Route path="/room/:id" element={<WaitingRoomPage />} />
+            <Route path="/game/:id" element={<GamePage />} />
             <Route path="/room/:id/leaderboard" element={<LeaderboardPage />} />
           </Route>
         </Routes>
