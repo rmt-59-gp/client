@@ -24,7 +24,7 @@ const LoginPage = () => {
 
           localStorage.setItem("username", username);
 
-          navigate("/lobby");
+          navigate("/");
         }} className="bg-yellow-100 border-[3px] font-['Fredoka'] border-dashed border-pink-400 rounded-3xl shadow-[6px_6px_0_#00000040] p-6 rotate-[-1.5deg]">
           <p className="text-xl font-semibold mb-4 text-blue-800">
             Type Your Name 🎮
