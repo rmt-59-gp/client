@@ -19,11 +19,11 @@ const RoomCreate = () => {
     socket.on("room:get", (arg) => {
       setRoomData(arg);
 
-      socket.on("room:new", (arg) => {
-        navigate(`/room/${arg.code}`);
-      });
     });
-
+    
+    socket.on("room:new", (arg) => {
+      navigate(`/room/${arg.code}`);
+    });
     
   };
 
