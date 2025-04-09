@@ -1,9 +1,9 @@
 import { io } from "socket.io-client";
 
 const socket = io(import.meta.env.VITE_BACKEND, {
-  auth: {
-    userName: localStorage.getItem("username"),
-  },
+  auth: (cb) => {
+    cb({ username: localStorage.username })
+  }
 });
 
 export default socket; 
