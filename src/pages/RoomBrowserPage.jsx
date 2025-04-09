@@ -19,8 +19,7 @@ const RoomBrowserPage = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {rooms.map(({ id, name, players, max }) => (
-            <RoomCard id={id} name={name} players={players} max={max} />
-          ))}
+            <RoomCard key={id} id={id} name={name} players={players} max={max} />
         </div>
 
       </div>
