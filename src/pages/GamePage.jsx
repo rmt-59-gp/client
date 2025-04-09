@@ -1,28 +1,29 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
+import Swal from 'sweetalert2';
 import socket from "../config/socket";
 
 const GamePage = () => {
-  const [questions, setQuestions] = useState([
-    {
-      question: "What is the capital of France?",
-      options: ["Paris", "London", "Berlin", "Madrid"],
-      correct: "Paris",
-    },
-    {
-      question: "What is 2 + 2?",
-      options: ["3", "4", "5", "6"],
-      correct: "4",
-    },
-    {
-      question: "Which planet is known as the Red Planet?",
-      options: ["Earth", "Mars", "Jupiter", "Venus"],
-      correct: "Mars",
-    },
-  ]);
+  // const [questions, setQuestions] = useState([
+  //   {
+  //     question: "What is the capital of France?",
+  //     listAnswer: ["Paris", "London", "Berlin", "Madrid"],
+  //     correctAnswer: "Paris",
+  //   },
+  //   {
+  //     question: "What is 2 + 2?",
+  //     listAnswer: ["3", "4", "5", "6"],
+  //     correctAnswer: "4",
+  //   },
+  //   {
+  //     question: "Which planet is known as the Red Planet?",
+  //     listAnswer: ["Earth", "Mars", "Jupiter", "Venus"],
+  //     correctAnswer: "Mars",
+  //   },
+  // ]);
 
   const { id } = useParams();
-  // const [questions, setQuestions] = useState([]);
+  const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [timer, setTimer] = useState(15); 
@@ -30,17 +31,34 @@ const GamePage = () => {
   const navigate = useNavigate();
 
   const currentQuestion = questions[currentQuestionIndex];
-
+  
   useEffect(() => {
     socket.on("quizQuestions", (data) => {
       setQuestions(data);
     });
+    
+    socket.emit('question:getRoomCode', {id})
+
+    socket.on('question:get', (arg)=> {
+      setQuestions(JSON.parse(arg.question))
+    })
+
+    socket.emit('username:send', {name: localStorage.getItem('username')})
+
+    socket.on('user:score', (arg)=> {
+      setScore(arg.score)
+    })
+
+    console.log(typeof questions);
+    console.log(questions);
 
     return () => {
       socket.off("quizQuestions");
+      socket.off("question:getRoomCode");
+      socket.off("question:get");
     };
   }, []);
-
+  
   useEffect(() => {
     const countdown = setInterval(() => {
       setTimer((prev) => (prev > 0 ? prev - 1 : 0));
@@ -58,15 +76,22 @@ const GamePage = () => {
   };
 
   const handleNextQuestion = () => {
-    if (selectedOption === currentQuestion.correct) {
-      setScore((prev) => prev + 1);
+    if (selectedOption === currentQuestion.correctAnswer) {
+      setScore(score + currentQuestion.score);
     }
     setSelectedOption(null);
     setTimer(15); 
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
     } else {
-      alert(`Quiz selesai! Skor Anda: ${score}/${questions.length}`);
+      Swal.fire({
+        title: 'Yeayyyy!',
+        text: `Quiz selesai! Skor Anda: ${score}/${questions.length}`,
+        icon: 'success'
+        // confirmButtonText: 'Cool'
+      })
+
+      // alert(`Quiz selesai! Skor Anda: ${score}/${questions.length}`);
       // navigate(`/leaderboard/:id`)
     }
   };
@@ -100,7 +125,7 @@ const GamePage = () => {
         {/* Jawaban */}
         <div className="bg-gray-100 border-[3px] font-['Fredoka'] border-dashed border-pink-400 rounded-3xl shadow-[6px_6px_0_#00000040] p-6 mb-7">
           <ul className="list-none">
-            {currentQuestion.options.map((option, index) => (
+            {currentQuestion.listAnswer.map((option, index) => (
               <li
               key={index}
               onClick={() => handleOptionSelect(option)}

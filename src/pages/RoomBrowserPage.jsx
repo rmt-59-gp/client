@@ -1,7 +1,7 @@
 import { useEffect } from "react";
+import { NavLink } from "react-router";
 import RoomCard from "../components/RoomCard";
 import socket from "../config/socket";
-import { NavLink } from "react-router";
 import useRoom from "../hooks/useRoom";
 
 const RoomBrowserPage = () => {

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import socket from "../config/socket";
 import { useNavigate } from "react-router";
+import socket from "../config/socket";
 import useRoom from "../hooks/useRoom";
 
 const RoomCreate = () => {
@@ -22,6 +22,7 @@ const RoomCreate = () => {
     });
     
     socket.on("room:new", (arg) => {
+      console.log(arg);
       navigate(`/room/${arg.code}`);
     });
     
