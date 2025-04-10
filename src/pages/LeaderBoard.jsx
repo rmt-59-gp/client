@@ -5,7 +5,7 @@ import useLeaderboard from "../hooks/useLeaderboard";
 
 const LeaderboardPage = () => {
   const { leaderboardData, setLeaderboardData } = useLeaderboard();
-  const { roomId } = useParams();
+  const { id } = useParams();
 
   useEffect(() => {
     socket.disconnect().connect();
@@ -21,7 +21,7 @@ const LeaderboardPage = () => {
   }, []);
 
   useEffect(() => {
-    socket.emit("leaderboard:fetch", { roomId });
+    socket.emit("leaderboard:fetch", { id });
 
     socket.on("leaderboard:get", (arg) => {
       setLeaderboardData(arg);
@@ -30,7 +30,7 @@ const LeaderboardPage = () => {
     return () => {
       socket.off("leaderboard:get");
     };
-  }, [roomId, setLeaderboardData]);
+  }, [id, setLeaderboardData]);
 
   return (
     <div className="min-h-screen bg-[url('/paper-texture.jpg')] bg-cover p-8">
@@ -43,7 +43,7 @@ const LeaderboardPage = () => {
             Check out the top players! <br /> Or
           </p>
           <NavLink
-            to={`/room/${roomId}`}
+            to={`/room/${id}`}
             className="hover:cursor-pointer bg-pink-400 hover:bg-pink-500 text-white px-6 py-3 rounded-full shadow-[3px_3px_0_#000000] font-bold text-lg mb-10"
           >
             ↩️ Back to Rooms
