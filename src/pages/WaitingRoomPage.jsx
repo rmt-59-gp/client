@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import useRoom from "../hooks/useRoom";
 import { useNavigate, useParams } from "react-router";
 import socket from "../config/socket";
+import useRoom from "../hooks/useRoom";
 
 const WaitingRoomPage = () => {
   const { id } = useParams();
@@ -44,6 +44,16 @@ const WaitingRoomPage = () => {
       socket.off("room:updated");
     };
   }, [id, username]);
+
+  useEffect(()=> {
+    socket.on("quiz:start", ({roomCode}) => {
+      navigate(`/game/${roomCode}`);
+    })
+
+    return () => {
+      socket.off("quiz:start");
+    }
+  }, [])
   
   const handleStartQuiz = () => {
     socket.emit("startQuiz", id);
