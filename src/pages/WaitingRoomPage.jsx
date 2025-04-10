@@ -60,8 +60,21 @@ const WaitingRoomPage = () => {
     navigate(`/game/${id}`);
   };
 
+  const handleLeaveRoom = () => {
+    socket.emit("room:leave", { code: id, username }); 
+    navigate("/"); 
+  };
+
   return (
         <div className="min-h-screen bg-[url('/paper-texture.jpg')] bg-cover p-8">
+           <button
+            onClick={handleLeaveRoom}
+            className="absolute top-4 left-4 hover:cursor-pointer shadow-2xl">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round"
+                d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-9A2.25 2.25 0 002.25 5.25v13.5A2.25 2.25 0 004.5 21h9a2.25 2.25 0 002.25-2.25V15M9 12h12m0 0l-3-3m3 3l-3 3"/>
+            </svg>
+          </button>
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center justify-center mb-8">
               <span className="text-4xl animate-spin mr-4">⏳</span>
