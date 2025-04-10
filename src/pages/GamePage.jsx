@@ -86,6 +86,27 @@ const GamePage = () => {
     setSelectedOption(option);
   };
 
+  //   const handleNextQuestion = () => {
+  //   if (selectedOption === currentQuestion.correctAnswer) {
+  //     setScore(score + currentQuestion.score);
+  //   }
+  //   setSelectedOption(null);
+  //   setTimer(15);
+  //   if (currentQuestionIndex < questions.length - 1) {
+  //     setCurrentQuestionIndex((prev) => prev + 1);
+  //   } else {
+  //     Swal.fire({
+  //       title: 'Yeayyyy!',
+  //       text: `Quiz selesai! Skor Anda: ${score}/${questions.length}`,
+  //       icon: 'success',
+  //     }).then(() => {
+  //       // Arahkan ke halaman leaderboard setelah menutup alert
+  //       navigate(`/room/${id}/leaderboard`);
+  //       // langsung ini aja ya....
+  //       socket.emit('endGame', { code: id });
+  //     });
+  //   }
+  // };
     const handleNextQuestion = () => {
     if (selectedOption === currentQuestion.correctAnswer) {
       setScore(score + currentQuestion.score);
@@ -100,10 +121,12 @@ const GamePage = () => {
         text: `Quiz selesai! Skor Anda: ${score}/${questions.length}`,
         icon: 'success',
       }).then(() => {
-        // Arahkan ke halaman leaderboard setelah menutup alert
+        const username = localStorage.getItem('username');
         navigate(`/room/${id}/leaderboard`);
-        // langsung ini aja ya....
-        socket.emit('endGame', { code: id });
+        socket.emit('endGame', {
+          code: id,
+          scores: [{ username, score }],
+        });
       });
     }
   };
