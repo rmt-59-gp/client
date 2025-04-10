@@ -85,9 +85,13 @@ const WaitingRoomPage = () => {
               </ul>
             </div>
             <div onClick={handleStartQuiz} className="text-center">
+            { room && room.host === localStorage.getItem("username") && 
+           (
               <button className="bg-pink-400 hover:cursor-pointer hover:bg-pink-500 font-['Fredoka'] text-white px-6 py-2 rounded-full shadow-md">
                 Start Quiz
               </button>
+            )
+            }
             </div>
           </div>
         </div>
