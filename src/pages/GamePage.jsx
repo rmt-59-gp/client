@@ -43,7 +43,7 @@ const GamePage = () => {
       setQuestions(JSON.parse(arg.question))
     })
 
-    socket.emit('username:send', {name: localStorage.getItem('username')})
+    socket.emit('username:send', {name: localStorage.getItem('username'), roomId: id})
 
     socket.on('user:score', (arg)=> {
       setScore(arg.score)
