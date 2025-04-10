@@ -1,34 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import Swal from 'sweetalert2';
 import socket from "../config/socket";
 
 const GamePage = () => {
-  // const [questions, setQuestions] = useState([
-  //   {
-  //     question: "What is the capital of France?",
-  //     listAnswer: ["Paris", "London", "Berlin", "Madrid"],
-  //     correctAnswer: "Paris",
-  //   },
-  //   {
-  //     question: "What is 2 + 2?",
-  //     listAnswer: ["3", "4", "5", "6"],
-  //     correctAnswer: "4",
-  //   },
-  //   {
-  //     question: "Which planet is known as the Red Planet?",
-  //     listAnswer: ["Earth", "Mars", "Jupiter", "Venus"],
-  //     correctAnswer: "Mars",
-  //   },
-  // ]);
-
   const { id } = useParams();
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [timer, setTimer] = useState(15); 
   const [score, setScore] = useState(0);
+  const [isQuizFinished, setIsQuizFinished] = useState(false);
   const navigate = useNavigate();
+  const timerRef = useRef(null);
 
   const currentQuestion = questions[currentQuestionIndex];
   
@@ -49,6 +33,16 @@ const GamePage = () => {
       setScore(arg.score)
     })
 
+    socket.on('quiz:finished', () => {
+      Swal.fire({
+        title: 'Semua Peserta Selesai!',
+        text: 'Anda akan diarahkan ke halaman leaderboard.',
+        icon: 'info',
+      }).then(() => {
+        navigate(`/room/${id}/leaderboard`);
+      });
+    });
+
     console.log(typeof questions);
     console.log(questions);
 
@@ -56,20 +50,42 @@ const GamePage = () => {
       socket.off("quizQuestions");
       socket.off("question:getRoomCode");
       socket.off("question:get");
+      socket.off("quiz:finished");
     };
-  }, []);
+  }, [id, navigate]);
+
+  
   
   useEffect(() => {
-    const countdown = setInterval(() => {
+    if (isQuizFinished) {
+      clearInterval(timerRef.current); 
+      return;
+    }
+
+    timerRef.current = setInterval(() => {
       setTimer((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
 
     if (timer === 0) {
-      handleNextQuestion();
+      clearInterval(timerRef.current); 
+      if (currentQuestionIndex < questions.length - 1) {
+        handleNextQuestion();
+      } else {
+        Swal.fire({
+          title: 'Waktu Habis!',
+          text: `Skor Anda: ${score}/${questions.length}`,
+          icon: 'warning',
+        }).then(() => {
+          console.log('Emitting quiz:finish event...');
+          console.log('Emitting quiz:finish event with:', { roomId: id, score });
+          socket.emit('quiz:finish', { roomId: id, score });
+          setIsQuizFinished(true); 
+        });
+      }
     }
 
-    return () => clearInterval(countdown);
-  }, [timer]);
+    return () => clearInterval(timerRef.current);
+  }, [timer, currentQuestionIndex, score, id, isQuizFinished]);
 
   const handleOptionSelect = (option) => {
     setSelectedOption(option);
@@ -80,21 +96,25 @@ const GamePage = () => {
       setScore(score + currentQuestion.score);
     }
     setSelectedOption(null);
-    setTimer(15); 
+    setTimer(15);
+
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
     } else {
       Swal.fire({
-        title: 'Yeayyyy!',
-        text: `Quiz selesai! Skor Anda: ${score}/${questions.length}`,
-        icon: 'success'
-        // confirmButtonText: 'Cool'
-      })
-
-      // alert(`Quiz selesai! Skor Anda: ${score}/${questions.length}`);
-      // navigate(`/leaderboard/:id`)
+        title: 'Quiz Selesai!',
+        text: `Skor Anda: ${score}/${questions.length}`,
+        icon: 'success',
+      }).then(() => {
+        console.log('Emitting quiz:finish event...');
+        socket.emit('quiz:finish', { roomId: id, score });
+        setIsQuizFinished(true); 
+        clearInterval(timerRef.current); 
+      });
     }
   };
+
+  
 
   if (questions.length === 0) {
     return (
@@ -150,10 +170,16 @@ const GamePage = () => {
           <button
             onClick={handleNextQuestion}
             className="bg-pink-400 hover:cursor-pointer hover:bg-pink-500 font-['Fredoka'] text-white px-6 py-2 rounded-full shadow-md"
-            disabled={!selectedOption}
-          >
+            disabled={!selectedOption}>
             {currentQuestionIndex < questions.length - 1 ? "Next Question" : "Finish Quiz"}
           </button>
+          {isQuizFinished && (
+            <button
+              onClick={() => navigate(`/room/${id}/leaderboard`)}
+              className="mt-4 bg-green-400 hover:cursor-pointer hover:bg-green-500 font-['Fredoka'] text-white px-6 py-2 rounded-full shadow-md">
+              Go to Leaderboard
+            </button>
+          )}
         </div>
       </div>
     </div>

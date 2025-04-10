@@ -21,7 +21,7 @@ const LeaderboardPage = () => {
   }, []);
 
   useEffect(() => {
-    socket.emit("leaderboard:fetch", { id });
+    socket.emit("leaderboard:fetch", { roomId: id });
 
     socket.on("leaderboard:get", (arg) => {
       setLeaderboardData(arg);
