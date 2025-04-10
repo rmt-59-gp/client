@@ -1,0 +1,24 @@
+@import url("https://fonts.googleapis.com/css2?family=Gloria+Hallelujah&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap");
+@import "tailwindcss";
+
+@keyframes flame {
+  0% {
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+  20% {
+    transform: translateY(-2px) scale(1.05) rotate(-2deg);
+  }
+  40% {
+    transform: translateY(2px) scale(0.95) rotate(2deg);
+  }
+  60% {
+    transform: translateY(-1px) scale(1.1) rotate(-1deg);
+  }
+  80% {
+    transform: translateY(1px) scale(0.9) rotate(1deg);
+  }
+  100% {
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+}
