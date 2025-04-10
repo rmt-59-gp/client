@@ -1,36 +1,16 @@
-import { useEffect } from "react";
-import socket from "../config/socket";
+import { useEffect, useState } from "react";
 import { NavLink, useParams } from "react-router-dom";
-import useLeaderboard from "../hooks/useLeaderboard";
 
 const LeaderboardPage = () => {
-  const { leaderboardData, setLeaderboardData } = useLeaderboard();
   const { id } = useParams();
+  const [leaderboardData, setLeaderboardData] = useState([]);
 
   useEffect(() => {
-    socket.disconnect().connect();
-
-    socket.on("message", (arg) => {
-      console.log(arg);
-      console.log("Welcome message from server:", arg);
-    });
-
-    return () => {
-      socket.off("message");
-    };
+    const storedLeaderboard = localStorage.getItem('leaderboard');
+    if (storedLeaderboard) {
+      setLeaderboardData(JSON.parse(storedLeaderboard));
+    }
   }, []);
-
-  useEffect(() => {
-    socket.emit("leaderboard:fetch", { id });
-
-    socket.on("leaderboard:get", (arg) => {
-      setLeaderboardData(arg);
-    });
-
-    return () => {
-      socket.off("leaderboard:get");
-    };
-  }, [id, setLeaderboardData]);
 
   return (
     <div className="min-h-screen bg-[url('/paper-texture.jpg')] bg-cover p-8">
@@ -40,7 +20,7 @@ const LeaderboardPage = () => {
             🏆 Leaderboard
           </h1>
           <p className="text-lg text-gray-800 font-['Fredoka'] text-center mb-1">
-            Check out the top players! <br /> Or
+            Check out the top players!
           </p>
           <NavLink
             to={`/room/${id}`}
