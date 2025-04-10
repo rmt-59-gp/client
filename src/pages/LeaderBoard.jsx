@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import socket from "../config/socket";
-import { NavLink, useParams } from "react-router-dom";
+import { NavLink, useParams } from "react-router";
 import useLeaderboard from "../hooks/useLeaderboard";
 
 const LeaderboardPage = () => {
